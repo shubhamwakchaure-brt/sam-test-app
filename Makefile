@@ -7,7 +7,7 @@
 # -------------------------------------------------------
 # Configuration
 # -------------------------------------------------------
-STACK_NAME    ?= sam-test-app
+STACK_NAME    ?= sam-test-app-sfsdvrmqplaysclopvexst34135
 REGION        ?= us-east-1
 ENV           ?= dev
 LOCAL_PORT    ?= 3030

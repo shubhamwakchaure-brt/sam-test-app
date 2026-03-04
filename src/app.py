@@ -3,6 +3,7 @@ app.py — Lambda entry point
 FastAPI application wrapped with Mangum (ASGI → Lambda proxy).
 Lambda Powertools provides structured logging, X-Ray tracing, and metrics.
 """
+import asyncio
 import os
 from contextlib import asynccontextmanager
 
@@ -10,18 +11,18 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
-from aws_lambda_powertools import Logger, Metrics, Tracer
+from aws_lambda_powertools import Logger, Metrics
 from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.metrics import MetricUnit
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from routers import v1_router
+from routers import v1
 
 # ------------------------------------------------------------------
 # Lambda Powertools — initialise once at module level (cold start)
 # ------------------------------------------------------------------
 logger  = Logger(service=os.environ.get("POWERTOOLS_SERVICE_NAME", "sam-test-fastapi"))
-tracer  = Tracer()
 metrics = Metrics()
 
 
@@ -81,9 +82,19 @@ _mangum_handler = Mangum(app, lifespan="off")
     correlation_id_path=correlation_paths.API_GATEWAY_REST,
     log_event=True,
 )
-@tracer.capture_lambda_handler
 @metrics.log_metrics(capture_cold_start_metric=True)
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
-    """AWS Lambda entry point — delegates to FastAPI via Mangum."""
+    print('Inside the lambda function')
     metrics.add_metric(name="Invocations", unit=MetricUnit.Count, value=1)
-    return _mangum_handler(event, context)
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        print('Inside the lambda function - before calling mangum handler')
+        return _mangum_handler(event, context)
+    finally:
+        try:
+            loop.close()
+            print('Inside the lambda function - before calling mangum handler - closing loop')
+        except Exception:  # pragma: no cover
+            pass

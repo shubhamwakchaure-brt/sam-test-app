@@ -16,7 +16,7 @@ packages = [
 python                = "^3.12"
 fastapi               = ">=0.111.0"
 mangum                = ">=0.17.0"          # ASGI adapter — Lambda <-> FastAPI
-aws-lambda-powertools = { version = ">=2.40.0", extras = ["tracer"] }
+aws-lambda-powertools = ">=2.40.0"          # tracer extra omitted: aws-xray-sdk not yet Python 3.13 compatible
 pydantic              = ">=2.7.0"
 
 # ------------------------------------------------------------------

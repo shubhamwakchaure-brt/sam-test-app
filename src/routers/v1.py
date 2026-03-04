@@ -10,12 +10,11 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query, status
-from aws_lambda_powertools import Logger, Tracer
+from aws_lambda_powertools import Logger
 
 from schemas.item import Item, ItemCreate, ItemUpdate, ItemListResponse
 
 logger = Logger(child=True)
-tracer = Tracer()
 
 router = APIRouter(tags=["v1"])
 
@@ -33,7 +32,6 @@ _store: dict[str, Item] = {}
     summary="Health check",
     response_description="Service health status",
 )
-@tracer.capture_method
 def health_check():
     """Verify the Lambda function, runtime, and FastAPI are all running."""
     return {
@@ -56,7 +54,6 @@ def health_check():
     response_model=ItemListResponse,
     summary="List all items",
 )
-@tracer.capture_method
 def list_items(
     limit: int = Query(default=50, ge=1, le=500, description="Max items to return"),
     offset: int = Query(default=0, ge=0, description="Pagination offset"),
@@ -74,7 +71,6 @@ def list_items(
     status_code=status.HTTP_201_CREATED,
     summary="Create an item",
 )
-@tracer.capture_method
 def create_item(payload: ItemCreate):
     """Create a new item and persist it to the store."""
     import uuid
@@ -96,7 +92,6 @@ def create_item(payload: ItemCreate):
     response_model=Item,
     summary="Get item by ID",
 )
-@tracer.capture_method
 def get_item(item_id: str):
     """Fetch a single item by its ID."""
     item = _store.get(item_id)
@@ -110,7 +105,6 @@ def get_item(item_id: str):
     response_model=Item,
     summary="Update an item",
 )
-@tracer.capture_method
 def update_item(item_id: str, payload: ItemUpdate):
     """Partially update an existing item."""
     item = _store.get(item_id)
@@ -131,7 +125,6 @@ def update_item(item_id: str, payload: ItemUpdate):
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete an item",
 )
-@tracer.capture_method
 def delete_item(item_id: str):
     """Delete an item by ID."""
     if item_id not in _store:

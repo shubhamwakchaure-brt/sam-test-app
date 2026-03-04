@@ -23,9 +23,11 @@ parameter_overrides = "Environment=dev"
 
 [default.local_start_api.parameters]
 warm_containers = "EAGER"
+container_host_interface = "0.0.0.0"
 
 [default.local_invoke.parameters]
 # no extra params needed
+container_host_interface = "0.0.0.0"
 
 # -------------------------------------------------------
 # Staging environment

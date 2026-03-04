@@ -9,12 +9,12 @@ Description: >
 # ------------------------------------------------------------------
 Globals:
   Function:
-    Runtime: python3.12
+    Runtime: python3.13
     Architectures:
       - x86_64
     MemorySize: 512
     Timeout: 30
-    Tracing: Active
+    Tracing: PassThrough
     Environment:
       Variables:
         LOG_LEVEL:                    INFO
