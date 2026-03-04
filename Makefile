@@ -2,6 +2,7 @@
         unit-test integration-test test \
         local-api local-invoke-get-all local-invoke-get-by-id \
         local-invoke-put local-invoke-delete local-invoke-health \
+        local-invoke-simple-hello local-invoke-simple-echo local-invoke-simple-items \
         deploy deploy-guided destroy clean
 
 # -------------------------------------------------------
@@ -38,6 +39,9 @@ help:
 	@echo "  integration-test      Run integration tests (needs running API)"
 	@echo "  test                  unit-test + build"
 	@echo "  local-api             Start local API via Docker (blocking)"
+	@echo "  local-invoke-simple-hello   Invoke SimpleFunction GET /v2/hello"
+	@echo "  local-invoke-simple-echo    Invoke SimpleFunction GET /v2/echo/..."
+	@echo "  local-invoke-simple-items   Invoke SimpleFunction GET /v2/items"
 	@echo "  deploy-guided         sam deploy --guided (first time)"
 	@echo "  deploy                sam deploy (subsequent)"
 	@echo "  destroy               Delete the deployed CloudFormation stack"
@@ -147,6 +151,21 @@ local-invoke-delete: build
 local-invoke-health: build
 	sam local invoke FastApiFunction \
 	  --event events/event-health.json
+
+local-invoke-simple-hello: build
+	sam local invoke SimpleFunction \
+	  --env-vars env-local.json \
+	  --event events/v2-hello.json
+
+local-invoke-simple-echo: build
+	sam local invoke SimpleFunction \
+	  --env-vars env-local.json \
+	  --event events/v2-echo.json
+
+local-invoke-simple-items: build
+	sam local invoke SimpleFunction \
+	  --env-vars env-local.json \
+	  --event events/v2-items.json
 
 # -------------------------------------------------------
 # Integration Tests  (requires local-api or deployed stack)

@@ -5,5 +5,8 @@
     "POWERTOOLS_TRACE_DISABLED": "true",
     "LOG_LEVEL": "DEBUG",
     "STAGE": "dev"
+  },
+  "SimpleFunction": {
+    "STAGE": "dev"
   }
 }

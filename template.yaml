@@ -79,7 +79,34 @@ Resources:
         Project: sam-test-app
         Environment: !Ref Environment
 
-# ------------------------------------------------------------------
+  # ---- Simple Lambda Function  (FastAPI, no Powertools) ----------
+  SimpleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "sam-test-simple-${Environment}"
+      CodeUri: src2/
+      Handler: app.lambda_handler
+      Description: Simple FastAPI application on Lambda - no Powertools
+      Environment:
+        Variables:
+          STAGE: !Ref Environment
+      Events:
+        ApiV2Root:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SamTestApi
+            Path: /v2
+            Method: ANY
+        ApiV2Proxy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SamTestApi
+            Path: /v2/{proxy+}
+            Method: ANY
+      Tags:
+        Project: sam-test-app
+        Environment: !Ref Environment
+
 # Outputs
 # ------------------------------------------------------------------
 Outputs:
@@ -102,3 +129,11 @@ Outputs:
   FastApiFunctionArn:
     Description: "FastAPI Lambda function ARN"
     Value: !GetAtt FastApiFunction.Arn
+
+  V2BaseUrl:
+    Description: "v2 API base URL (Simple Lambda)"
+    Value: !Sub "https://${SamTestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/v2"
+
+  SimpleFunctionArn:
+    Description: "Simple Lambda function ARN"
+    Value: !GetAtt SimpleFunction.Arn

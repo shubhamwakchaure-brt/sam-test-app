@@ -1,0 +1,22 @@
+{
+  "httpMethod": "GET",
+  "path": "/v2/hello",
+  "resource": "/v2/{proxy+}",
+  "pathParameters": { "proxy": "hello" },
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "headers": {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+    "Host": "localhost"
+  },
+  "multiValueHeaders": null,
+  "requestContext": {
+    "stage": "dev",
+    "resourcePath": "/v2/{proxy+}",
+    "httpMethod": "GET",
+    "requestId": "test-v2-request-id"
+  },
+  "body": null,
+  "isBase64Encoded": false
+}
