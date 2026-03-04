@@ -1,0 +1,11 @@
+# ---------------------------------------------------------------
+# This file is NO LONGER used directly.
+# Dependencies are managed by Poetry via pyproject.toml.
+#
+# To add/update a dependency:
+#   poetry add <package>              # runtime
+#   poetry add --group dev <package>  # dev-only
+#
+# To regenerate src/requirements.txt for SAM build:
+#   make poetry-export
+# ---------------------------------------------------------------

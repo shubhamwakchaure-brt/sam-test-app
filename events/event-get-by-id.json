@@ -1,0 +1,20 @@
+{
+  "httpMethod": "GET",
+  "path": "/v1/items/abc-123",
+  "pathParameters": {
+    "proxy": "items/abc-123"
+  },
+  "queryStringParameters": null,
+  "headers": {
+    "Accept": "application/json"
+  },
+  "body": null,
+  "isBase64Encoded": false,
+  "requestContext": {
+    "requestId": "test-request-002",
+    "stage": "dev",
+    "httpMethod": "GET",
+    "path": "/v1/items/abc-123",
+    "resourcePath": "/v1/{proxy+}"
+  }
+}

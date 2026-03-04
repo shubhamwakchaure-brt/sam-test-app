@@ -1,0 +1,20 @@
+{
+  "httpMethod": "GET",
+  "path": "/v1/health",
+  "pathParameters": {
+    "proxy": "health"
+  },
+  "queryStringParameters": null,
+  "headers": {
+    "Accept": "application/json"
+  },
+  "body": null,
+  "isBase64Encoded": false,
+  "requestContext": {
+    "requestId": "test-request-005",
+    "stage": "dev",
+    "httpMethod": "GET",
+    "path": "/v1/health",
+    "resourcePath": "/v1/{proxy+}"
+  }
+}

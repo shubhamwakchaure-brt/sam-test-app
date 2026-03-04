@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "path": "/v1/items",
+  "pathParameters": null,
+  "queryStringParameters": null,
+  "headers": {
+    "Accept": "application/json",
+    "Content-Type": "application/json"
+  },
+  "body": null,
+  "isBase64Encoded": false,
+  "requestContext": {
+    "requestId": "test-request-001",
+    "stage": "dev",
+    "httpMethod": "GET",
+    "path": "/v1/items",
+    "resourcePath": "/v1/{proxy+}"
+  }
+}

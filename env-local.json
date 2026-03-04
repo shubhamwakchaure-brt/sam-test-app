@@ -1,0 +1,9 @@
+{
+  "FastApiFunction": {
+    "POWERTOOLS_SERVICE_NAME": "sam-test-fastapi",
+    "POWERTOOLS_METRICS_NAMESPACE": "SamTestApp",
+    "POWERTOOLS_TRACE_DISABLED": "true",
+    "LOG_LEVEL": "DEBUG",
+    "STAGE": "dev"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "httpMethod": "DELETE",
+  "path": "/v1/items/abc-123",
+  "pathParameters": {
+    "proxy": "items/abc-123"
+  },
+  "queryStringParameters": null,
+  "headers": {
+    "Accept": "application/json"
+  },
+  "body": null,
+  "isBase64Encoded": false,
+  "requestContext": {
+    "requestId": "test-request-004",
+    "stage": "dev",
+    "httpMethod": "DELETE",
+    "path": "/v1/items/abc-123",
+    "resourcePath": "/v1/{proxy+}"
+  }
+}

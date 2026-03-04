@@ -1,0 +1,19 @@
+{
+  "httpMethod": "POST",
+  "path": "/v1/items",
+  "pathParameters": null,
+  "queryStringParameters": null,
+  "headers": {
+    "Accept": "application/json",
+    "Content-Type": "application/json"
+  },
+  "body": "{\"name\": \"Test Item\", \"description\": \"A sample item for SAM testing\", \"tags\": [\"test\", \"sam\", \"fastapi\"]}",
+  "isBase64Encoded": false,
+  "requestContext": {
+    "requestId": "test-request-003",
+    "stage": "dev",
+    "httpMethod": "POST",
+    "path": "/v1/items",
+    "resourcePath": "/v1/{proxy+}"
+  }
+}

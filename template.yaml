@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sam-test-app
+  FastAPI on AWS Lambda via Mangum + Lambda Powertools
+
+# ------------------------------------------------------------------
+# Globals
+# ------------------------------------------------------------------
+Globals:
+  Function:
+    Runtime: python3.12
+    Architectures:
+      - x86_64
+    MemorySize: 512
+    Timeout: 30
+    Tracing: Active
+    Environment:
+      Variables:
+        LOG_LEVEL:                    INFO
+        POWERTOOLS_SERVICE_NAME:      sam-test-fastapi
+        POWERTOOLS_METRICS_NAMESPACE: SamTestApp
+
+# ------------------------------------------------------------------
+# Parameters
+# ------------------------------------------------------------------
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, prod]
+    Description: Deployment environment
+
+# ------------------------------------------------------------------
+# Resources
+# ------------------------------------------------------------------
+Resources:
+
+  # ---- REST API Gateway ------------------------------------------
+  SamTestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub "sam-test-api-${Environment}"
+      StageName: !Ref Environment
+      Description: Single proxy route — all routing handled by FastAPI + Mangum inside Lambda
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,PATCH,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+      TracingEnabled: true
+      Tags:
+        Project: sam-test-app
+        Environment: !Ref Environment
+
+  # ---- Single Lambda Function  (FastAPI + Mangum) ----------------
+  FastApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "sam-test-fastapi-${Environment}"
+      CodeUri: src/
+      Handler: app.lambda_handler          # src/app.py -> lambda_handler
+      Description: FastAPI application running on Lambda, routed by Mangum
+      Events:
+        # /v1  (root, no trailing slash)
+        ApiV1Root:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SamTestApi
+            Path: /v1
+            Method: ANY
+        # /v1/<anything>
+        ApiV1Proxy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SamTestApi
+            Path: /v1/{proxy+}
+            Method: ANY
+      Tags:
+        Project: sam-test-app
+        Environment: !Ref Environment
+
+# ------------------------------------------------------------------
+# Outputs
+# ------------------------------------------------------------------
+Outputs:
+  ApiBaseUrl:
+    Description: "API Gateway base URL"
+    Value: !Sub "https://${SamTestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}"
+
+  V1BaseUrl:
+    Description: "v1 API base URL"
+    Value: !Sub "https://${SamTestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/v1"
+
+  DocsUrl:
+    Description: "Swagger UI (OpenAPI docs)"
+    Value: !Sub "https://${SamTestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/v1/docs"
+
+  ReDocUrl:
+    Description: "ReDoc (OpenAPI docs)"
+    Value: !Sub "https://${SamTestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/v1/redoc"
+
+  FastApiFunctionArn:
+    Description: "FastAPI Lambda function ARN"
+    Value: !GetAtt FastApiFunction.Arn
