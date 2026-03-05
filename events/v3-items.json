@@ -1,0 +1,11 @@
+{
+  "httpMethod": "GET",
+  "path": "/v3/items",
+  "resource": "/v3/{proxy+}",
+  "pathParameters": { "proxy": "items" },
+  "queryStringParameters": null,
+  "headers": { "Accept": "application/json", "Host": "localhost" },
+  "requestContext": { "stage": "dev", "httpMethod": "GET", "requestId": "test-v3-items" },
+  "body": null,
+  "isBase64Encoded": false
+}

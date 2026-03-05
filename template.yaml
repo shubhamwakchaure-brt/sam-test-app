@@ -107,6 +107,35 @@ Resources:
         Project: sam-test-app
         Environment: !Ref Environment
 
+  # ---- Raw Lambda Function  (pure Python, no frameworks) ---------
+  RawFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "sam-test-raw-${Environment}"
+      CodeUri: src3/
+      Handler: app.lambda_handler
+      Description: Pure Python Lambda — routing via if/else, no frameworks
+      Environment:
+        Variables:
+          STAGE: !Ref Environment
+      Timeout: 300
+      Events:
+        ApiV3Root:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SamTestApi
+            Path: /v3
+            Method: ANY
+        ApiV3Proxy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SamTestApi
+            Path: /v3/{proxy+}
+            Method: ANY
+      Tags:
+        Project: sam-test-app
+        Environment: !Ref Environment
+
 # Outputs
 # ------------------------------------------------------------------
 Outputs:
@@ -137,3 +166,11 @@ Outputs:
   SimpleFunctionArn:
     Description: "Simple Lambda function ARN"
     Value: !GetAtt SimpleFunction.Arn
+
+  V3BaseUrl:
+    Description: "v3 API base URL (Raw Lambda)"
+    Value: !Sub "https://${SamTestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/v3"
+
+  RawFunctionArn:
+    Description: "Raw Lambda function ARN"
+    Value: !GetAtt RawFunction.Arn

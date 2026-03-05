@@ -3,6 +3,8 @@
         local-api local-invoke-get-all local-invoke-get-by-id \
         local-invoke-put local-invoke-delete local-invoke-health \
         local-invoke-simple-hello local-invoke-simple-echo local-invoke-simple-items \
+        local-invoke-raw-hello local-invoke-raw-echo local-invoke-raw-greet local-invoke-raw-items \
+        rie-simple rie-fastapi rie-stop \
         deploy deploy-guided destroy clean
 
 # -------------------------------------------------------
@@ -42,6 +44,13 @@ help:
 	@echo "  local-invoke-simple-hello   Invoke SimpleFunction GET /v2/hello"
 	@echo "  local-invoke-simple-echo    Invoke SimpleFunction GET /v2/echo/..."
 	@echo "  local-invoke-simple-items   Invoke SimpleFunction GET /v2/items"
+	@echo "  local-invoke-raw-hello      Invoke RawFunction GET /v3/hello"
+	@echo "  local-invoke-raw-echo       Invoke RawFunction GET /v3/echo/..."
+	@echo "  local-invoke-raw-greet      Invoke RawFunction POST /v3/greet"
+	@echo "  local-invoke-raw-items      Invoke RawFunction GET /v3/items"
+	@echo "  rie-simple            Start SimpleFunction via built-in RIE on port 9001"
+	@echo "  rie-fastapi           Start FastApiFunction via built-in RIE on port 9000"
+	@echo "  rie-stop              Stop all running RIE containers"
 	@echo "  deploy-guided         sam deploy --guided (first time)"
 	@echo "  deploy                sam deploy (subsequent)"
 	@echo "  destroy               Delete the deployed CloudFormation stack"
@@ -166,6 +175,81 @@ local-invoke-simple-items: build
 	sam local invoke SimpleFunction \
 	  --env-vars env-local.json \
 	  --event events/v2-items.json
+
+local-invoke-raw-hello: build
+	sam local invoke RawFunction \
+	  --env-vars env-local.json \
+	  --event events/v3-hello.json
+
+local-invoke-raw-echo: build
+	sam local invoke RawFunction \
+	  --env-vars env-local.json \
+	  --event events/v3-echo.json
+
+local-invoke-raw-greet: build
+	sam local invoke RawFunction \
+	  --env-vars env-local.json \
+	  --event events/v3-greet.json
+
+local-invoke-raw-items: build
+	sam local invoke RawFunction \
+	  --env-vars env-local.json \
+	  --event events/v3-items.json
+
+# -------------------------------------------------------
+# RIE — Lambda Runtime Interface Emulator
+# Bypasses SAM CLI (and Zscaler) by running the Lambda
+# RIE HTTP server directly inside the Docker container.
+#
+# Usage:
+#   make rie-simple          (start in background)
+#   curl --noproxy '*' -s -X POST http://localhost:9001/2015-03-31/functions/function/invocations \
+#     -H 'Content-Type: application/json' -d @events/v2-hello.json | python3 -m json.tool
+#
+#   make rie-fastapi         (start in background)
+#   curl --noproxy '*' -s -X POST http://localhost:9000/2015-03-31/functions/function/invocations \
+#     -H 'Content-Type: application/json' -d @events/health.json | python3 -m json.tool
+#
+#   make rie-stop            (stop both containers)
+# -------------------------------------------------------
+RIE_IMAGE     ?= public.ecr.aws/lambda/python:3.13-rapid-x86_64
+RIE_SIMPLE_PORT  ?= 9001
+RIE_FASTAPI_PORT ?= 9000
+
+rie-simple: build
+	@echo ">>> Stopping any existing rie-simple container..."
+	docker rm -f rie-simple 2>/dev/null || true
+	@echo ">>> Starting SimpleFunction RIE on http://localhost:$(RIE_SIMPLE_PORT)"
+	docker run -d --name rie-simple \
+	  -v $(PWD)/.aws-sam/build/SimpleFunction:/var/task:ro \
+	  -e STAGE=$(ENV) \
+	  -p $(RIE_SIMPLE_PORT):8080 \
+	  $(RIE_IMAGE) app.lambda_handler
+	@echo ">>> Invoke with:"
+	@echo "    curl --noproxy '*' -s -X POST http://localhost:$(RIE_SIMPLE_PORT)/2015-03-31/functions/function/invocations \\"
+	@echo "      -H 'Content-Type: application/json' -d @events/v2-hello.json | python3 -m json.tool"
+
+rie-fastapi: build
+	@echo ">>> Stopping any existing rie-fastapi container..."
+	docker rm -f rie-fastapi 2>/dev/null || true
+	@echo ">>> Starting FastApiFunction RIE on http://localhost:$(RIE_FASTAPI_PORT)"
+	docker run -d --name rie-fastapi \
+	  -v $(PWD)/.aws-sam/build/FastApiFunction:/var/task:ro \
+	  -e POWERTOOLS_SERVICE_NAME=sam-test-fastapi \
+	  -e POWERTOOLS_METRICS_NAMESPACE=SamTestApp \
+	  -e POWERTOOLS_TRACE_DISABLED=true \
+	  -e LOG_LEVEL=DEBUG \
+	  -e STAGE=$(ENV) \
+	  -p $(RIE_FASTAPI_PORT):8080 \
+	  $(RIE_IMAGE) app.lambda_handler
+	@echo ">>> Invoke with:"
+	@echo "    curl --noproxy '*' -s -X POST http://localhost:$(RIE_FASTAPI_PORT)/2015-03-31/functions/function/invocations \\"
+	@echo "      -H 'Content-Type: application/json' -d @events/health.json | python3 -m json.tool"
+
+rie-stop:
+	@echo ">>> Stopping RIE containers..."
+	docker rm -f rie-simple rie-fastapi 2>/dev/null || true
+	@echo ">>> Done."
 
 # -------------------------------------------------------
 # Integration Tests  (requires local-api or deployed stack)

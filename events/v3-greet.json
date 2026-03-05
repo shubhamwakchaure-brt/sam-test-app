@@ -1,0 +1,11 @@
+{
+  "httpMethod": "POST",
+  "path": "/v3/greet",
+  "resource": "/v3/{proxy+}",
+  "pathParameters": { "proxy": "greet" },
+  "queryStringParameters": null,
+  "headers": { "Accept": "application/json", "Content-Type": "application/json", "Host": "localhost" },
+  "requestContext": { "stage": "dev", "httpMethod": "POST", "requestId": "test-v3-greet" },
+  "body": "{\"name\": \"Alice\"}",
+  "isBase64Encoded": false
+}

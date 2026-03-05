@@ -8,5 +8,8 @@
   },
   "SimpleFunction": {
     "STAGE": "dev"
+  },
+  "RawFunction": {
+    "STAGE": "dev"
   }
 }

@@ -1,0 +1,11 @@
+{
+  "httpMethod": "GET",
+  "path": "/v3/echo/helloworld",
+  "resource": "/v3/{proxy+}",
+  "pathParameters": { "proxy": "echo/helloworld" },
+  "queryStringParameters": null,
+  "headers": { "Accept": "application/json", "Host": "localhost" },
+  "requestContext": { "stage": "dev", "httpMethod": "GET", "requestId": "test-v3-echo" },
+  "body": null,
+  "isBase64Encoded": false
+}
