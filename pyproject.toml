@@ -18,7 +18,8 @@ fastapi               = ">=0.111.0"
 mangum                = ">=0.17.0"          # ASGI adapter — Lambda <-> FastAPI
 aws-lambda-powertools = ">=2.40.0"          # tracer extra omitted: aws-xray-sdk not yet Python 3.13 compatible
 pydantic              = ">=2.7.0"
-
+diagrams              = ">=0.22.0"  # for architecture diagrams in docs
+graphviz              = ">=0.20.0"  # for architecture diagrams in docs
 # ------------------------------------------------------------------
 # Dev dependencies (local testing only — NOT deployed to Lambda)
 # ------------------------------------------------------------------
