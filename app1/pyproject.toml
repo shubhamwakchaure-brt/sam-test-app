@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "app1"
+version = "0.1.0"
+description = "Simple math and stats utility library"
+authors = []
+packages = [{ include = "app1" }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+pytest     = ">=8.0.0"
+pytest-cov = ">=5.0.0"
+
+[build-system]
+requires      = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths    = ["tests"]
+python_files = ["test_*.py"]
+addopts      = "-v --tb=short"
